@@ -5,7 +5,7 @@ import numpy as np
 from leap_c.ocp.acados.parameters import Parameter
 
 
-@dataclass(kw_only=True)
+from dataclasses import dataclass
 class PointMassParams:
     # Mass and friction parameters
     m: Parameter  # mass

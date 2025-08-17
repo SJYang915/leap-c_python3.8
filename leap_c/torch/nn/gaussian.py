@@ -1,3 +1,4 @@
+from typing import Dict, Tuple
 """Provides a simple Gaussian layer that allows policies to respect action bounds."""
 
 from gymnasium import spaces
@@ -47,7 +48,7 @@ class BoundedTransform(nn.Module):
         x = torch.tanh(x)
         return x * self.scale[None, :] + self.loc[None, :]
 
-    def inverse(self, x: torch.Tensor, padding: float = 0.001) -> tuple[torch.Tensor]:
+    def inverse(self, x: 'torch.Tensor', padding: float = 0.001) -> Tuple['torch.Tensor']:
         """Applies the inverse squashing function to the input tensor.
 
         Args:
@@ -100,7 +101,7 @@ class SquashedGaussian(nn.Module):
 
     def forward(
         self, mean: torch.Tensor, log_std: torch.Tensor, deterministic: bool = False
-    ) -> tuple[torch.Tensor, torch.Tensor, dict[str, float]]:
+    ) -> Tuple['torch.Tensor', 'torch.Tensor', Dict[str, float]]:
         """
         Args:
             mean: The mean of the distribution.

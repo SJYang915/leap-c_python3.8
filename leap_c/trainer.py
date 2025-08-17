@@ -18,7 +18,7 @@ from leap_c.torch.utils.seed import set_seed
 TrainerConfigType = TypeVar("TrainerConfigType", bound="TrainerConfig")
 
 
-@dataclass(kw_only=True)
+@dataclass
 class TrainerConfig:
     """Contains the necessary information for the training loop.
 
@@ -60,7 +60,7 @@ class TrainerConfig:
     log: LoggerConfig = field(default_factory=lambda: LoggerConfig())
 
 
-@dataclass(kw_only=True)
+@dataclass
 class TrainerState:
     """The state of a trainer.
 

@@ -1,3 +1,4 @@
+from typing import Any, Callable, Dict, Optional, Tuple, Type, Union
 """Module defining the abstract interface for differentiable, parameterized
 controllers in PyTorch."""
 
@@ -15,10 +16,10 @@ class ParameterizedController(nn.Module):
 
     # should be provided in cases the controller comes with specific collate
     # functions for different data types. This is an advanced feature!
-    collate_fn_map: Optional[dict[Union[type, tuple[type, ...]], Callable]] = None
+    collate_fn_map: Optional[Dict[Union[Type, Tuple[Type, ...]], Callable]] = None
 
     @abstractmethod
-    def forward(self, obs, param, ctx=None) -> tuple[Any, torch.Tensor]:
+    def forward(self, obs, param, ctx=None) -> Tuple[Any, 'torch.Tensor']:
         """Computes action from observation, parameters and internal context.
 
         Args:

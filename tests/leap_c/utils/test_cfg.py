@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from leap_c.utils.cfg import cfg_as_python
 
 
-@dataclass
+from dataclasses import dataclass
 class VeryDeep:
     z: float = 1.5
 
@@ -11,7 +11,8 @@ class VeryDeep:
 @dataclass
 class SomeClass:
     x: int = 3
-    y: tuple[int, ...] = (12, 13)
+    from typing import Tuple
+    y: Tuple[int, ...] = (12, 13)
     deep: VeryDeep = field(default_factory=VeryDeep)
 
 

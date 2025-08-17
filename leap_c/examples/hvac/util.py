@@ -1,3 +1,4 @@
+from typing import Any, Dict, List, Optional, Tuple, Union
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path
@@ -59,7 +60,7 @@ class EnergyPriceProfile:
         assert np.all(self.price >= 0), "Energy price must be non-negative"
 
 
-def load_price_data(csv_path: str | Path) -> pd.DataFrame:
+def load_price_data(csv_path: Union[str, 'Path']) -> 'pd.DataFrame':
     """
     Load electricity price data from CSV file.
 
@@ -164,7 +165,7 @@ def create_price_profile_from_spot_sprices(
     return EnergyPriceProfile(price=price_array)
 
 
-def load_weather_data(csv_path: str | Path) -> pd.DataFrame:
+def load_weather_data(csv_path: Union[str, 'Path']) -> 'pd.DataFrame':
     """
     Load weather data from CSV file.
 
@@ -297,8 +298,8 @@ def create_realistic_comfort_bounds(
     N: int,
     start_time: str,
     dt_minutes: float = 15.0,
-    day_temp_range: tuple[float, float] = (20.0, 22.0),
-    night_temp_range: tuple[float, float] = (18.0, 21.0),
+    day_temp_range: Tuple[float, float] = (20.0, 22.0),
+    night_temp_range: Tuple[float, float] = (18.0, 21.0),
     day_start_hour: int = 7,
     day_end_hour: int = 22,
 ) -> ComfortBounds:
@@ -367,7 +368,7 @@ def create_time_of_use_energy_costs(
     dt_minutes: float = 15.0,
     base_cost: float = 0.05,
     peak_cost: float = 0.20,
-    peak_hours: tuple[int, int] = (17, 21),  # 5 PM to 9 PM
+    peak_hours: Tuple[int, int] = (17, 21),  # 5 PM to 9 PM
 ) -> EnergyPriceProfile:
     """
     Create time-of-use energy cost profile with peak pricing.
@@ -404,13 +405,13 @@ def create_constant_energy_price(N: int, cost: float) -> EnergyPriceProfile:
 
 
 def plot_ocp_results(
-    solution: dict[str, Any],
+    solution: Dict[str, Any],
     disturbance_profile: DisturbanceProfile,
-    energy_prices: EnergyPriceProfile | None = None,
-    comfort_bounds: ComfortBounds | None = None,
+    energy_prices: Optional['EnergyPriceProfile'] = None,
+    comfort_bounds: Optional['ComfortBounds'] = None,
     dt: float = 15 * 60,
-    figsize: tuple[float, float] = (12, 10),
-    save_path: str | None = None,
+    figsize: Tuple[float, float] = (12, 10),
+    save_path: Optional[str] = None,
 ) -> plt.Figure:
     """
     Plot the OCP solution results in a figure with three vertically stacked subplots.
@@ -617,9 +618,9 @@ def plot_ocp_results(
 
 
 def plot_comfort_violations(
-    solution: dict[str, Any],
+    solution: Dict[str, Any],
     dt: float = 15 * 60,
-    figsize: tuple[float, float] = (10, 6),
+    figsize: Tuple[float, float] = (10, 6),
 ) -> plt.Figure:
     """
     Plot comfort violations (slack variables) over time.
@@ -671,11 +672,11 @@ def plot_comfort_violations(
 
 
 def transcribe_continuous_state_space(
-    Ac: ca.SX | np.ndarray,
-    Bc: ca.SX | np.ndarray,
-    Ec: ca.SX | np.ndarray,
-    params: dict[str, float],
-) -> tuple[ca.SX, ca.SX, ca.SX]:
+    Ac: Union['ca.SX', 'np.ndarray'],
+    Bc: Union['ca.SX', 'np.ndarray'],
+    Ec: Union['ca.SX', 'np.ndarray'],
+    params: Dict[str, float],
+) -> Tuple['ca.SX', 'ca.SX', 'ca.SX']:
     """
     Create continuous-time state-space matrices Ac, Bc, Ec as per equation (6).
 
@@ -733,12 +734,12 @@ def transcribe_continuous_state_space(
 
 
 def transcribe_discrete_state_space(
-    Ad: ca.SX | np.ndarray,
-    Bd: ca.SX | np.ndarray,
-    Ed: ca.SX | np.ndarray,
+    Ad: Union['ca.SX', 'np.ndarray'],
+    Bd: Union['ca.SX', 'np.ndarray'],
+    Ed: Union['ca.SX', 'np.ndarray'],
     dt: float,
-    params: dict[str, float],
-) -> tuple[ca.SX, ca.SX, ca.SX]:
+    params: Dict[str, float],
+) -> Tuple['ca.SX', 'ca.SX', 'ca.SX']:
     """
     Create discrete-time state-space matrices Ad, Bd, Ed as per equation (7).
 
@@ -764,9 +765,10 @@ def transcribe_discrete_state_space(
         )
 
         # Discretize the continuous-time state-space representation
-        Ad = scipy.linalg.expm(Ac * dt)  # Discrete-time state matrix
-        Bd = np.linalg.solve(Ac, (Ad - np.eye(3))) @ Bc
-        Ed = np.linalg.solve(Ac, (Ad - np.eye(3))) @ Ec
+        Ad_new = scipy.linalg.expm(Ac * dt)  # Discrete-time state matrix
+        Bd_new = np.linalg.solve(Ac, (Ad_new - np.eye(3))) @ Bc
+        Ed_new = np.linalg.solve(Ac, (Ad_new - np.eye(3))) @ Ec
+        return Ad_new, Bd_new, Ed_new
 
     elif isinstance(Ad, ca.SX):
         # Create continuous-time state-space matrices
@@ -778,13 +780,14 @@ def transcribe_discrete_state_space(
         )
 
         # Discretize the continuous-time state-space representation
-        Ad = ca.expm(Ac * dt)  # Discrete-time state matrix
-        Bd = ca.mtimes(
-            ca.mtimes(ca.inv(Ac), (Ad - ca.SX.eye(3))), Bc
+        Ad_new = ca.expm(Ac * dt)  # Discrete-time state matrix
+        Bd_new = ca.mtimes(
+            ca.mtimes(ca.inv(Ac), (Ad_new - ca.SX.eye(3))), Bc
         )  # Discrete-time input matrix
-        Ed = ca.mtimes(
-            ca.mtimes(ca.inv(Ac), (Ad - ca.SX.eye(3))), Ec
+        Ed_new = ca.mtimes(
+            ca.mtimes(ca.inv(Ac), (Ad_new - ca.SX.eye(3))), Ec
         )  # Discrete-time disturbance matrix
+        return Ad_new, Bd_new, Ed_new
 
     return Ad, Bd, Ed
 
@@ -911,7 +914,7 @@ def set_temperature_limits(
     lb_day: float = convert_temperature(19.0, "celsius", "kelvin"),
     ub_night: float = convert_temperature(25.0, "celsius", "kelvin"),
     ub_day: float = convert_temperature(22.0, "celsius", "kelvin"),
-) -> tuple[np.ndarray[np.float64], np.ndarray[np.float64]]:
+) -> Tuple['np.ndarray', 'np.ndarray']:
     """Set temperature limits based on the time of day."""
     hours = np.floor(quarter_hours / 4)
 

@@ -1,3 +1,4 @@
+from typing import Tuple
 from typing import Callable
 
 import casadi as ca
@@ -83,7 +84,7 @@ class RestingChainSolver:
         self.x0 = x0
         self.p0 = p0
 
-    def __call__(self, p_last: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    def __call__(self, p_last: 'np.ndarray') -> Tuple['np.ndarray', 'np.ndarray']:
         self.p0["p_last"] = p_last
 
         self.w0 = np.concatenate(

@@ -1,4 +1,5 @@
 from dataclasses import asdict, dataclass
+from typing import Dict, Tuple
 
 import numpy as np
 from scipy.constants import convert_temperature
@@ -32,12 +33,12 @@ class BestestParameters:
     # Heater parameters
     eta: float  # Efficiency for electric heater
 
-    def to_dict(self) -> dict[str, float]:
+    def to_dict(self) -> Dict[str, float]:
         """Convert parameters to a dictionary with string keys and float values."""
         return {k: float(v) for k, v in asdict(self).items()}
 
     @classmethod
-    def from_dict(cls, params_dict: dict[str, float]) -> "BestestParameters":
+    def from_dict(cls, params_dict: Dict[str, float]) -> "BestestParameters":
         """Create an instance from a dictionary."""
         return cls(**params_dict)
 
@@ -78,7 +79,7 @@ class BestestHydronicHeatpumpParameters(BestestParameters):
     eta: float = 0.98
 
 
-def make_default_hvac_params(stagewise: bool = False) -> tuple[Parameter, ...]:
+def make_default_hvac_params(stagewise: bool = False) -> Tuple[Parameter, ...]:
     """Return a tuple of default parameters for the hvac problem."""
     hydronic_params = BestestHydronicParameters().to_dict()
 

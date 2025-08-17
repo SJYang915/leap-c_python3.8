@@ -1,3 +1,4 @@
+from typing import Tuple
 import numpy as np
 import pygame
 from pygame import draw
@@ -5,12 +6,12 @@ from pygame import draw
 
 def draw_arrow(
     canvas: pygame.Surface,
-    origin: tuple[int, int],
+    origin: Tuple[int, int],
     length_arrow: int,
     width_head: int,
     length_head: int,
     rotate_deg: float,
-    color: tuple[int, int, int],
+    color: Tuple[int, int, int],
     width_line: int,
 ) -> None:
     """
@@ -63,7 +64,7 @@ def draw_arrow(
 
 def draw_ellipse_from_eigen(
     canvas: pygame.Surface,
-    center: tuple[int, int],
+    center: Tuple[int, int],
     radius_minor: float,
     Q: np.ndarray,
 ):

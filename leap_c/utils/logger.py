@@ -11,7 +11,7 @@ import wandb
 from torch.utils.tensorboard import SummaryWriter
 
 
-@dataclass(kw_only=True)
+@dataclass
 class LoggerConfig:
     """
     Contains the necessary information for logging.

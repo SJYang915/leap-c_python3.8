@@ -1,3 +1,4 @@
+from typing import Optional, Union
 """Main script to run experiments."""
 
 from argparse import ArgumentParser
@@ -79,9 +80,9 @@ def create_cfg() -> RunSacZopConfig:
 
 def run_sac_zop(
     cfg: RunSacZopConfig,
-    output_path: str | Path,
+    output_path: Union[str, 'Path'],
     device: str = "cuda",
-    reuse_code_dir: Path | None = None,
+    reuse_code_dir: Optional['Path'] = None,
 ) -> float:
     trainer = SacZopTrainer(
         cfg=cfg.trainer,

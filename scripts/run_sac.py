@@ -1,3 +1,4 @@
+from typing import Union
 """Main script to run experiments."""
 
 from argparse import ArgumentParser
@@ -75,7 +76,7 @@ def create_cfg() -> RunSacConfig:
     return cfg
 
 
-def run_sac(cfg: RunSacConfig, output_path: str | Path, device: str = "cuda") -> float:
+def run_sac(cfg: 'RunSacConfig', output_path: Union[str, 'Path'], device: str = "cuda") -> float:
     trainer = SacTrainer(
         cfg=cfg.trainer,
         val_env=create_env(cfg.env, render_mode="rgb_array"),

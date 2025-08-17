@@ -1,3 +1,4 @@
+from typing import Any, Optional, Tuple
 from copy import deepcopy
 from dataclasses import asdict
 from pathlib import Path
@@ -32,14 +33,14 @@ class ChainController(ParameterizedController):
 
     def __init__(
         self,
-        params: ChainParams | None = None,
+    params: Optional['ChainParams'] = None,
         N_horizon: int = 20,
         T_horizon: float = 1.0,
         discount_factor: float = 1.0,
         n_mass: int = 5,
-        pos_last_mass_ref: np.ndarray | None = None,
+    pos_last_mass_ref: Optional['np.ndarray'] = None,
         stagewise: bool = False,
-        export_directory: Path | None = None,
+    export_directory: Optional['Path'] = None,
     ):
         super().__init__()
         params = (
@@ -78,7 +79,7 @@ class ChainController(ParameterizedController):
             export_directory=export_directory,
         )
 
-    def forward(self, obs, param, ctx=None) -> tuple[Any, torch.Tensor]:
+    def forward(self, obs, param, ctx=None) -> Tuple[Any, 'torch.Tensor']:
         p_stagewise = self.param_manager.combine_parameter_values(
             batch_size=obs.shape[0]
         )

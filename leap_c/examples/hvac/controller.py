@@ -1,3 +1,4 @@
+from typing import Any, Dict, Optional, Tuple, Union
 from pathlib import Path
 from typing import Any, NamedTuple
 
@@ -45,11 +46,11 @@ class HvacController(ParameterizedController):
 
     def __init__(
         self,
-        params: tuple[Parameter, ...] | None = None,
+    params: Optional[Tuple['Parameter', ...]] = None,
         stagewise: bool = False,
         N_horizon: int = 96,  # 24 hours in 15 minutes time steps
-        diff_mpc_kwargs: dict[str, Any] | None = None,
-        export_directory: Path | None = None,
+    diff_mpc_kwargs: Optional[Dict[str, Any]] = None,
+    export_directory: Optional['Path'] = None,
     ) -> None:
         super().__init__()
 
@@ -72,7 +73,7 @@ class HvacController(ParameterizedController):
             self.ocp, **diff_mpc_kwargs, export_directory=export_directory
         )
 
-    def forward(self, obs, param: Any = None, ctx=None) -> tuple[Any, torch.Tensor]:
+    def forward(self, obs, param: Any = None, ctx=None) -> Tuple[Any, 'torch.Tensor']:
         batch_size = obs.shape[0]
 
         if ctx is None:
@@ -139,7 +140,7 @@ class HvacController(ParameterizedController):
         lb, ub = self.param_manager.get_p_global_bounds()
         return gym.spaces.Box(low=lb, high=ub, dtype=np.float64)
 
-    def default_param(self, obs) -> np.ndarray | None:
+    def default_param(self, obs) -> Optional['np.ndarray']:
         if self.stagewise:
             param = self.param_manager.p_global_values(0)
 
@@ -166,7 +167,7 @@ def export_parametric_ocp(
     param_manager: AcadosParamManager,
     N_horizon: int,
     name: str = "hvac",
-    x0: np.ndarray | None = None,
+    x0: Optional['np.ndarray'] = None,
 ) -> AcadosOcp:
     """
     Export the HVAC OCP.
@@ -287,8 +288,8 @@ def export_parametric_ocp(
 
 
 def _create_base_plot(
-    figsize: tuple[float, float] = (12, 10),
-) -> tuple[plt.Figure, list]:
+    figsize: Tuple[float, float] = (12, 10),
+) -> Tuple['plt.Figure', list]:
     """Create base figure and axes for thermal building control plots."""
     fig, axes = plt.subplots(4, 1, figsize=figsize, sharex=True)
     fig.suptitle(
@@ -447,8 +448,8 @@ def plot_ocp_results(
     time: np.ndarray[np.datetime64],
     obs: np.ndarray,
     ctx: Any,
-    figsize: tuple[float, float] = (12, 10),
-    save_path: str | None = None,
+    figsize: Tuple[float, float] = (12, 10),
+    save_path: Optional[str] = None,
 ) -> plt.Figure:
     """
     Plot the OCP solution results in a figure with three vertically stacked subplots.

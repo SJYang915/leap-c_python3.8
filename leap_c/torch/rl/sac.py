@@ -18,7 +18,7 @@ from leap_c.trainer import Trainer, TrainerConfig
 from leap_c.utils.gym import wrap_env, seed_env
 
 
-@dataclass(kw_only=True)
+@dataclass
 class SacTrainerConfig(TrainerConfig):
     """Contains the necessary configuration for a SacTrainer.
 

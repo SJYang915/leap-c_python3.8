@@ -3,7 +3,7 @@
 from argparse import ArgumentParser
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any, Iterator, Union, Optional, Dict, Tuple
 import numpy as np
 import gymnasium as gym
 
@@ -39,7 +39,7 @@ class ControllerTrainer(Trainer[ControllerTrainerConfig]):
         self,
         cfg: ControllerTrainerConfig,
         val_env: gym.Env,
-        output_path: str | Path,
+    output_path: Union[str, Path],
         device: str,
         controller: ParameterizedController,
     ):
@@ -55,7 +55,7 @@ class ControllerTrainer(Trainer[ControllerTrainerConfig]):
 
     def act(
         self, obs, deterministic: bool = False, state=None
-    ) -> tuple[np.ndarray, Any, dict[str, float]]:
+    ) -> Tuple[np.ndarray, Any, Dict[str, float]]:
         """Use controller with default parameters."""
         obs_batched = self.collate_fn([obs])
 
@@ -103,9 +103,9 @@ def create_cfg() -> RunControllerConfig:
 
 def run_controller(
     cfg: RunControllerConfig,
-    output_path: str | Path,
+    output_path: Union[str, Path],
     device: str = "cpu",
-    reuse_code_dir: Path | None = None,
+    reuse_code_dir: Optional[Path] = None,
 ) -> float:
     trainer = ControllerTrainer(
         val_env=create_env(cfg.env, render_mode="rgb_array"),

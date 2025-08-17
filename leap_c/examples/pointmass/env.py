@@ -159,7 +159,7 @@ class WindParcour(WindField):
         return np.array([0.0, 0.0])
 
 
-@dataclass
+from dataclasses import dataclass
 class PointMassParam:
     dt: float  # time discretization
     m: float  # mass

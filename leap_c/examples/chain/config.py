@@ -5,7 +5,7 @@ import numpy as np
 from leap_c.ocp.acados.parameters import Parameter
 
 
-@dataclass(kw_only=True)
+@dataclass
 class ChainParams:
     L: Parameter  # rest length of spring
     D: Parameter  # spring constant

@@ -27,7 +27,7 @@ N_BATCH_MAX = 256
 NUM_THREADS_BATCH_SOLVER = 4
 
 
-@dataclass
+from dataclasses import dataclass
 class AcadosDiffMpcCtx:
     """Context for differentiable MPC with acados.
 

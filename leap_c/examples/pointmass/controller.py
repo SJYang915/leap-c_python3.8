@@ -1,3 +1,4 @@
+from typing import Any, Optional, Tuple, Union
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any
@@ -26,11 +27,11 @@ class PointMassController(ParameterizedController):
 
     def __init__(
         self,
-        params: PointMassParams | None = None,
+    params: Optional['PointMassParams'] = None,
         N_horizon: int = 20,
         T_horizon: float = 2.0,
         stagewise: bool = False,
-        export_directory: Path | None = None,
+    export_directory: Optional['Path'] = None,
     ):
         super().__init__()
         self.params = (
@@ -51,7 +52,7 @@ class PointMassController(ParameterizedController):
 
         self.diff_mpc = AcadosDiffMpc(self.ocp, export_directory=export_directory)
 
-    def forward(self, obs, param, ctx=None) -> tuple[Any, torch.Tensor]:
+    def forward(self, obs, param, ctx=None) -> Tuple[Any, 'torch.Tensor']:
         x = obs[:, :4]
         p_stagewise = self.param_manager.combine_parameter_values(batch_size=x.shape[0])
         ctx, u0, x, u, value = self.diff_mpc(
@@ -72,8 +73,8 @@ class PointMassController(ParameterizedController):
 
 
 def _create_diag_matrix(
-    _q_sqrt: np.ndarray | ca.SX,
-) -> np.ndarray | ca.SX:
+    _q_sqrt: Union['np.ndarray', 'ca.SX'],
+) -> Union['np.ndarray', 'ca.SX']:
     if any(isinstance(i, ca.SX) for i in [_q_sqrt]):
         return ca.diag(_q_sqrt)
     return np.diag(_q_sqrt)

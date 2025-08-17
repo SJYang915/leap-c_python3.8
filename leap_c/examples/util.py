@@ -1,3 +1,4 @@
+from typing import Any, Dict, List, Tuple
 import casadi as ca
 import numpy as np
 from acados_template import AcadosModel, AcadosOcp
@@ -5,8 +6,8 @@ from casadi.tools import entry, struct_symSX
 
 
 def find_param_in_p_or_p_global(
-    param_name: list[str], model: AcadosModel
-) -> dict[str, ca.SX]:
+    param_name: List[str], model: 'AcadosModel'
+) -> Dict[str, 'ca.SX']:
     if model.p == []:
         return {key: model.p_global[key] for key in param_name}  # type:ignore
     elif model.p_global is None:
@@ -19,8 +20,8 @@ def find_param_in_p_or_p_global(
 
 
 def _process_params(
-    params: list[str], nominal_param: dict[str, np.ndarray]
-) -> tuple[list, list]:
+    params: List[str], nominal_param: Dict[str, 'np.ndarray']
+) -> Tuple[list, list]:
     entries = []
     values = []
     for param in params:
@@ -34,8 +35,8 @@ def _process_params(
 
 
 def translate_learnable_param_to_p_global(
-    nominal_param: dict[str, np.ndarray],
-    learnable_param: list[str],
+    nominal_param: Dict[str, 'np.ndarray'],
+    learnable_param: List[str],
     ocp: AcadosOcp,
     verbose: bool = False,
 ) -> AcadosOcp:

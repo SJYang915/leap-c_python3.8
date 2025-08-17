@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import Any, List, Optional, Tuple, Union
 from typing import Callable
 
 import torch
@@ -32,11 +33,11 @@ def string_to_weight_init(weight_init: str) -> Callable[[nn.Module], None]:
         raise ValueError(f"Weight initialization {weight_init} not recognized.")
 
 
-@dataclass(kw_only=True)
+@dataclass
 class MlpConfig:
     hidden_dims: Sequence[int] = (256, 256, 256)
     activation: str = "relu"
-    weight_init: str | None = "orthogonal"  # If None, no init will be used
+    weight_init: Optional[str] = "orthogonal"  # If None, no init will be used
 
 
 class MLP(nn.Module):
@@ -50,8 +51,8 @@ class MLP(nn.Module):
 
     def __init__(
         self,
-        input_sizes: int | list[int],
-        output_sizes: int | list[int],
+    input_sizes: Union[int, List[int]],
+    output_sizes: Union[int, List[int]],
         mlp_cfg: MlpConfig,
     ) -> None:
         """Initializes the MLP.
@@ -86,7 +87,7 @@ class MLP(nn.Module):
         if mlp_cfg.weight_init is not None:
             self.mlp.apply(string_to_weight_init(mlp_cfg.weight_init))
 
-    def forward(self, *x: torch.Tensor) -> torch.Tensor | tuple[torch.Tensor, ...]:
+    def forward(self, *x: 'torch.Tensor') -> Union['torch.Tensor', Tuple['torch.Tensor', ...]]:
         if isinstance(x, tuple):
             x = torch.cat(x, dim=-1)  # type: ignore
         y = self.mlp(x)

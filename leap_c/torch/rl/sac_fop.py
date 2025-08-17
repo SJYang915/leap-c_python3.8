@@ -22,7 +22,7 @@ from leap_c.trainer import Trainer
 from leap_c.utils.gym import wrap_env, seed_env
 
 
-@dataclass(kw_only=True)
+@dataclass
 class SacFopTrainerConfig(SacTrainerConfig):
     """Specific settings for the Fop trainer."""
 

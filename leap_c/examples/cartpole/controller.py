@@ -1,3 +1,4 @@
+from typing import Any, Optional, Tuple, Union
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Literal
@@ -20,7 +21,7 @@ class CartPoleController(ParameterizedController):
 
     def __init__(
         self,
-        params: CartPoleParams | None = None,
+    params: Optional['CartPoleParams'] = None,
         N_horizon: int = 5,
         T_horizon: float = 0.25,
         Fmax: float = 80.0,
@@ -28,7 +29,7 @@ class CartPoleController(ParameterizedController):
         exact_hess_dyn: bool = True,
         cost_type: Literal["EXTERNAL", "NONLINEAR_LS"] = "NONLINEAR_LS",
         stagewise: bool = False,
-        export_directory: Path | None = None,
+    export_directory: Optional['Path'] = None,
     ):
         """
         Args:
@@ -73,7 +74,7 @@ class CartPoleController(ParameterizedController):
             self.ocp, discount_factor=discount_factor, export_directory=export_directory
         )
 
-    def forward(self, obs, param, ctx=None) -> tuple[Any, torch.Tensor]:
+    def forward(self, obs, param, ctx=None) -> Tuple[Any, 'torch.Tensor']:
         p_stagewise = self.param_manager.combine_parameter_values(
             batch_size=obs.shape[0]
         )
@@ -148,7 +149,7 @@ def define_disc_dyn_expr(
 
 def define_cost_matrix(
     model: AcadosModel, param_manager: AcadosParamManager
-) -> ca.SX | np.ndarray:
+) -> Union['ca.SX', 'np.ndarray']:
     q_diag = param_manager.get("q_diag_sqrt")
     r_diag = param_manager.get("r_diag_sqrt")
 

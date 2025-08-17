@@ -1,3 +1,4 @@
+from typing import Any, Dict, Optional, Tuple, Union
 from __future__ import annotations
 
 from pathlib import Path
@@ -42,15 +43,15 @@ class StochasticThreeStateRcEnv(gym.Env):
 
     def __init__(
         self,
-        params: None | BestestParameters = None,
+    params: Optional['BestestParameters'] = None,
         step_size: float = 900.0,  # Default 15 minutes
-        start_time: pd.Timestamp | None = None,
+    start_time: Optional['pd.Timestamp'] = None,
         horizon_hours: int = 36,
         max_hours: int = 3 * 24,  # 3 days
-        render_mode: str | None = None,
+    render_mode: Optional[str] = None,
         price_zone: str = "NO_1",
-        price_data_path: Path | None = None,
-        weather_data_path: Path | None = None,
+    price_data_path: Optional['Path'] = None,
+    weather_data_path: Optional['Path'] = None,
         enable_noise: bool = True,
     ) -> None:
         """
@@ -247,7 +248,7 @@ class StochasticThreeStateRcEnv(gym.Env):
 
     def _compute_discrete_matrices(
         self,
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    ) -> Tuple['np.ndarray', 'np.ndarray', 'np.ndarray', 'np.ndarray']:
         """
         Compute discrete-time matrices using exact discretization via matrix exponential.
         This includes both deterministic dynamics and noise covariance.
@@ -493,7 +494,7 @@ class StochasticThreeStateRcEnv(gym.Env):
     def step(
         self,
         action: np.ndarray,
-    ) -> tuple[np.ndarray, float, bool, bool, dict]:
+    ) -> Tuple['np.ndarray', float, bool, bool, dict]:
         """
         Perform a simulation step with exact discrete-time dynamics including noise.
 
@@ -542,8 +543,8 @@ class StochasticThreeStateRcEnv(gym.Env):
         return obs, reward, terminated, truncated, info
 
     def reset(
-        self, state_0: np.ndarray | None = None, seed=None, options=None
-    ) -> tuple[np.ndarray, dict]:
+    self, state_0: Optional['np.ndarray'] = None, seed=None, options=None
+    ) -> Tuple['np.ndarray', dict]:
         """Reset the model state to initial values."""
         super().reset(seed=seed)
 

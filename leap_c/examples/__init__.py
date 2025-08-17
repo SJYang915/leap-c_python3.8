@@ -1,3 +1,4 @@
+from typing import Optional
 from pathlib import Path
 from functools import partial
 
@@ -41,7 +42,7 @@ def create_env(env_name: str, **kw):
 
 def create_controller(
     controller_name: str,
-    reuse_code_base_dir: Path | None = None,
+    reuse_code_base_dir: Optional['Path'] = None,
 ):
     """Create a controller.
 

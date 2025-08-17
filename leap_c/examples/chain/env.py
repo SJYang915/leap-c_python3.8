@@ -1,3 +1,4 @@
+from typing import Any, Dict, Optional, Tuple
 from typing import Any
 
 import gymnasium as gym
@@ -20,10 +21,10 @@ class ChainEnv(gym.Env):
 
     def __init__(
         self,
-        render_mode: str | None = None,
-        params: ChainParams | None = None,
+    render_mode: Optional[str] = None,
+    params: Optional['ChainParams'] = None,
         n_mass: int = 5,
-        pos_last_mass_ref: np.ndarray | None = None,
+    pos_last_mass_ref: Optional['np.ndarray'] = None,
     ):
         super().__init__()
         # Create default chain params
@@ -98,7 +99,7 @@ class ChainEnv(gym.Env):
 
         self._set_canvas()
 
-    def step(self, action: np.ndarray) -> tuple[Any, float, bool, bool, dict]:
+    def step(self, action: 'np.ndarray') -> Tuple[Any, float, bool, bool, dict]:
         u = action
         self.action = action
 
@@ -137,8 +138,8 @@ class ChainEnv(gym.Env):
         return o, r, term, trunc, info
 
     def reset(
-        self, *, seed: int | None = None, options: dict | None = None
-    ) -> tuple[Any, dict]:  # type: ignore
+    self, *, seed: Optional[int] = None, options: Optional[dict] = None
+    ) -> Tuple[Any, dict]:  # type: ignore
         if seed is not None:
             super().reset(seed=seed)
             self.observation_space.seed(seed)

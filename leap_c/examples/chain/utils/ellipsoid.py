@@ -1,3 +1,4 @@
+from typing import List, Union
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -36,7 +37,7 @@ class Ellipsoid:
         return fig
 
     def spherical_to_cartesian(
-        self, phi: np.ndarray | float, theta: np.ndarray | float
+    self, phi: Union['np.ndarray', float], theta: Union['np.ndarray', float]
     ) -> np.ndarray:
         x = self.radii[0] * np.outer(np.cos(phi), np.sin(theta)) + self.center[0]
         y = self.radii[1] * np.outer(np.sin(phi), np.sin(theta)) + self.center[1]
@@ -50,7 +51,7 @@ class Ellipsoid:
         return out
 
     def sample_within_range(
-        self, phi_range: list[float, float], theta_range: list[float, float], size: int
+    self, phi_range: List[float], theta_range: List[float], size: int
     ) -> np.ndarray:
         phi = self.rng.uniform(low=phi_range[0], high=phi_range[1], size=size)
         theta = self.rng.uniform(low=theta_range[0], high=theta_range[1], size=size)
