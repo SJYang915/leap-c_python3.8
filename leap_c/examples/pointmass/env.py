@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, List
+from typing import Any, List, Tuple, Union, Optional
 
 import casadi as ca
 import gymnasium as gym
@@ -35,11 +35,12 @@ class Circle:
 
 class WindField(ABC):
     @abstractmethod
-    def __call__(self, pos: np.ndarray) -> np.ndarray: ...
+    def __call__(self, pos: np.ndarray) -> np.ndarray:
+        raise NotImplementedError
 
     def plot_XY(
-        self, xlim: tuple[float, float], ylim: tuple[float, float]
-    ) -> tuple[np.ndarray, np.ndarray]:
+        self, xlim: Tuple[float, float], ylim: Tuple[float, float]
+    ) -> Tuple[np.ndarray, np.ndarray]:
         nx = ny = 20
         x = np.linspace(xlim[0], xlim[1], nx)
         y = np.linspace(ylim[0], ylim[1], ny)
@@ -49,8 +50,8 @@ class WindField(ABC):
     def plot_wind_field(
         self,
         ax: Axes,
-        xlim: tuple[float, float],
-        ylim: tuple[float, float],
+        xlim: Tuple[float, float],
+        ylim: Tuple[float, float],
         scale: float = 80.0,
     ):
         # Get x, y
@@ -103,8 +104,8 @@ class WindParcour(WindField):
             raise ValueError(f"Unknown difficulty level: {difficulty}")
 
     def plot_XY(
-        self, xlim: tuple[float, float], ylim: tuple[float, float]
-    ) -> tuple[np.ndarray, np.ndarray]:
+        self, xlim: Tuple[float, float], ylim: Tuple[float, float]
+    ) -> Tuple[np.ndarray, np.ndarray]:
         parts_X = []
         parts_Y = []
 
@@ -134,8 +135,8 @@ class WindParcour(WindField):
     def plot_wind_field(
         self,
         ax: Axes,
-        xlim: tuple[float, float],
-        ylim: tuple[float, float],
+        xlim: Tuple[float, float],
+        ylim: Tuple[float, float],
         scale: float = 80.0,
     ):
         # plot rectangles for each boxes
@@ -159,7 +160,7 @@ class WindParcour(WindField):
         return np.array([0.0, 0.0])
 
 
-from dataclasses import dataclass
+@dataclass
 class PointMassParam:
     dt: float  # time discretization
     m: float  # mass
@@ -168,51 +169,52 @@ class PointMassParam:
 
 
 def _A_disc(
-    m: float | ca.SX,
-    cx: float | ca.SX,
-    cy: float | ca.SX,
-    dt: float | ca.SX,
-) -> np.ndarray | ca.SX:
-    if any(isinstance(i, ca.SX) for i in [m, cx, cy, dt]):
+    m: Union[float, ca.SX],
+    cx: Union[float, ca.SX],
+    cy: Union[float, ca.SX],
+    dt: Union[float, ca.SX],
+) -> Union[np.ndarray, ca.SX]:
+    if any(isinstance(i, ca.SX) for i in (m, cx, cy, dt)):
         return ca.vertcat(
             ca.horzcat(1, 0, dt, 0),
             ca.horzcat(0, 1, 0, dt),
             ca.horzcat(0, 0, ca.exp(-cx * dt / m), 0),
             ca.horzcat(0, 0, 0, ca.exp(-cy * dt / m)),
-        )  # type: ignore
-
+        )
     return np.array(
         [
             [1, 0, dt, 0],
             [0, 1, 0, dt],
             [0, 0, np.exp(-cx * dt / m), 0],
             [0, 0, 0, np.exp(-cy * dt / m)],
-        ]
+        ],
+        dtype=float,
     )
 
 
 def _B_disc(
-    m: float | ca.SX,
-    cx: float | ca.SX,
-    cy: float | ca.SX,
-    dt: float | ca.SX,
-) -> np.ndarray | ca.SX:
-    if any(isinstance(i, ca.SX) for i in [m, cx, cy, dt]):
+    m: Union[float, ca.SX],
+    cx: Union[float, ca.SX],
+    cy: Union[float, ca.SX],
+    dt: Union[float, ca.SX],
+) -> Union[np.ndarray, ca.SX]:
+    if any(isinstance(i, ca.SX) for i in (m, cx, cy, dt)):
         return ca.vertcat(
             ca.horzcat(0, 0),
             ca.horzcat(0, 0),
             ca.horzcat((m / cx) * (1 - ca.exp(-cx * dt / m)), 0),
             ca.horzcat(0, (m / cy) * (1 - ca.exp(-cy * dt / m))),
-        )  # type: ignore
-
-    return np.array(
-        [
-            [0, 0],
-            [0, 0],
-            [(m / cx) * (1 - np.exp(-cx * dt / m)), 0],
-            [0, (m / cy) * (1 - np.exp(-cy * dt / m))],
-        ]
-    )
+        )
+    else:
+        return np.array(
+            [
+                [0.0, 0.0],
+                [0.0, 0.0],
+                [(m / cx) * (1 - np.exp(-cx * dt / m)), 0.0],
+                [0.0, (m / cy) * (1 - np.exp(-cy * dt / m))],
+            ],
+            dtype=float,
+        )
 
 
 class PointMassEnv(gym.Env):
@@ -223,7 +225,7 @@ class PointMassEnv(gym.Env):
         param: PointMassParam = PointMassParam(dt=0.1, m=1.0, cx=15, cy=15),
         Fmax: float = 10,
         max_time: float = 10.0,
-        render_mode: str | None = None,
+        render_mode: Optional[str] = None,
         difficulty: str = "easy",
     ):
         # gymnasium setup
@@ -252,19 +254,19 @@ class PointMassEnv(gym.Env):
         self.wind_field = WindParcour(magnitude=max_wind_force, difficulty=difficulty)
 
         # env state
-        self.state: np.ndarray | None = None
-        self.action: np.ndarray | None = None
+        self.state: Optional[np.ndarray] = None
+        self.action: Optional[np.ndarray] = None
         self.time: float = 0.0
 
         # plotting attributes (initialize to None)
-        self.fig: plt.Figure | None = None  # type: ignore
-        self.ax: plt.Axes | None = None  # type: ignore
-        self.trajectory_plot: plt.Line2D | None = None  # type: ignore
-        self.agent_plot: plt.Line2D | None = None  # type: ignore
-        self.action_arrow_patch: FancyArrowPatch | None = None
+        self.fig: Optional[plt.Figure] = None  # type: ignore
+        self.ax: Optional[plt.Axes] = None  # type: ignore
+        self.trajectory_plot: Optional[plt.Line2D] = None  # type: ignore
+        self.agent_plot: Optional[plt.Line2D] = None  # type: ignore
+        self.action_arrow_patch: Optional[FancyArrowPatch] = None
         self.trajectory: List[np.ndarray] = []
 
-    def step(self, action: np.ndarray) -> tuple[Any, float, bool, bool, dict]:
+    def step(self, action: np.ndarray) -> Tuple[Any, float, bool, bool, dict]:
         if self.state is None:
             raise ValueError("Environment must be reset before stepping.")
 
@@ -301,8 +303,8 @@ class PointMassEnv(gym.Env):
         return self._observation(), float(r), bool(term), bool(trunc), info
 
     def reset(
-        self, *, seed: int | None = None, options: dict | None = None
-    ) -> tuple[Any, dict]:
+        self, *, seed: Optional[int] = None, options: Optional[dict] = None
+    ) -> Tuple[Any, dict]:
         super().reset(seed=seed)
         self.time = 0.0
         self.state = self._init_state(options=options)
@@ -338,11 +340,11 @@ class PointMassEnv(gym.Env):
 
         return state
 
-    def render(self) -> np.ndarray | None:
+    def render(self) -> Optional[np.ndarray]:
         with latex_plot_context():
             return self._render()
 
-    def _render(self) -> np.ndarray | None:
+    def _render(self) -> Optional[np.ndarray]:
         if self.render_mode is None:
             gym.logger.warn("Cannot render environment without a render_mode set.")
             return None

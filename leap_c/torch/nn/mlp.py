@@ -1,7 +1,5 @@
-from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, List, Optional, Tuple, Union
-from typing import Callable
+from typing import Any, List, Optional, Tuple, Union, Callable, Sequence
 
 import torch
 import torch.nn as nn
@@ -51,8 +49,8 @@ class MLP(nn.Module):
 
     def __init__(
         self,
-    input_sizes: Union[int, List[int]],
-    output_sizes: Union[int, List[int]],
+        input_sizes: Union[int, List[int]],
+        output_sizes: Union[int, List[int]],
         mlp_cfg: MlpConfig,
     ) -> None:
         """Initializes the MLP.

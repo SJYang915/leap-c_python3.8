@@ -1,4 +1,4 @@
-from typing import NamedTuple, Sequence
+from typing import NamedTuple, Sequence, Optional
 
 from acados_template.acados_ocp_iterate import (
     AcadosOcpFlattenedBatchIterate,
@@ -14,10 +14,10 @@ class AcadosOcpSolverInput(NamedTuple):
     """
 
     x0: np.ndarray
-    u0: np.ndarray | None = None
-    p_global: np.ndarray | None = None
-    p_stagewise: np.ndarray | None = None
-    p_stagewise_sparse_idx: np.ndarray | None = None
+    u0: Optional[np.ndarray] = None
+    p_global: Optional[np.ndarray] = None
+    p_stagewise: Optional[np.ndarray] = None
+    p_stagewise_sparse_idx: Optional[np.ndarray] = None
 
     def is_batched(self) -> bool:
         return self.x0.ndim == 2

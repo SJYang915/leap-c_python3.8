@@ -1,6 +1,6 @@
 import collections
 import random
-from typing import Any, Callable, Optional, Union
+from typing import Optional, Dict, Union, Tuple, Type, Callable, Any
 
 import torch
 import torch.nn as nn
@@ -35,8 +35,10 @@ class ReplayBuffer(nn.Module):
         self,
         buffer_limit: int,
         device: str,
-        tensor_dtype: torch.dtype = torch.float32,
-        collate_fn_map: Optional[dict[Union[tuple, tuple[type, ...]], Callable]] = None,
+        tensor_dtype: "torch.dtype" = torch.float32,
+        collate_fn_map: Optional[
+            Dict[Union[Tuple[Any, ...], Tuple[Type[Any], ...]], Callable[..., Any]]
+        ] = None,
     ):
         """
         Initialize the replay buffer.

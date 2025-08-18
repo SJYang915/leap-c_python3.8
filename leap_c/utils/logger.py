@@ -1,9 +1,8 @@
 import bisect
 from collections import defaultdict
-from collections.abc import Generator
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Tuple, Union, Generator
 
 import numpy as np
 import pandas as pd
@@ -34,7 +33,7 @@ class LoggerConfig:
     csv_logger: bool = True
     tensorboard_logger: bool = True
     wandb_logger: bool = False
-    wandb_init_kwargs: dict[str, Any] = field(default_factory=dict)
+    wandb_init_kwargs: Dict[str, Any] = field(default_factory=dict)
 
 
 class GroupWindowTracker:
@@ -53,12 +52,12 @@ class GroupWindowTracker:
         self._interval = interval
         self._window_size = window_size
 
-        self._timestamps: dict = defaultdict(list)
-        self._statistics: dict = defaultdict(list)
+        self._timestamps = defaultdict(list)
+        self._statistics = defaultdict(list)
 
     def update(
-        self, timestamp: int, stats: dict[str, float]
-    ) -> Generator[tuple[int, dict[str, float]], None, None]:
+        self, timestamp: int, stats: Dict[str, float]
+    ) -> Generator[Tuple[int, Dict[str, float]], None, None]:
         """
         Add timestamp and statistics to the tracker.
 
@@ -137,7 +136,7 @@ class Logger:
         writer: The TensorBoard writer.
     """
 
-    def __init__(self, cfg: LoggerConfig, output_path: str | Path) -> None:
+    def __init__(self, cfg: LoggerConfig, output_path: Union[str, Path]) -> None:
         """
         Initialize the logger.
 
@@ -167,7 +166,7 @@ class Logger:
     def __call__(
         self,
         group: str,
-        stats: dict[str, float | np.ndarray],
+        stats: Dict[str, Union[float, np.ndarray]],
         timestamp: int,
         verbose: bool = False,
         with_smoothing: bool = True,

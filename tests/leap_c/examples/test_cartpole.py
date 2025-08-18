@@ -20,7 +20,7 @@ def cartpole_controller(request):
 
 def plot_cart_pole_solution(
     ocp_solver: AcadosOcpSolver,
-) -> Tuple[plt.Figure, np.ndarray[plt.Axes]]:
+) -> Tuple[plt.Figure, np.ndarray]:
     k = np.arange(0, ocp_solver.N + 1)
     u = np.array([ocp_solver.get(stage, "u") for stage in range(ocp_solver.N)])
     x = np.array([ocp_solver.get(stage, "x") for stage in range(ocp_solver.N + 1)])

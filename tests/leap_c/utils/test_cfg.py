@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from leap_c.utils.cfg import cfg_as_python
 
 
-from dataclasses import dataclass
+@dataclass
 class VeryDeep:
     z: float = 1.5
 

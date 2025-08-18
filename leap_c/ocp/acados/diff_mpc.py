@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Literal, Sequence
+from typing import Callable, Literal, Sequence, Optional, Dict, List, Tuple
 
 import numpy as np
 from acados_template import AcadosOcp
@@ -22,12 +22,11 @@ from leap_c.ocp.acados.utils.create_solver import create_forward_backward_batch_
 from leap_c.ocp.acados.utils.prepare_solver import prepare_batch_solver_for_backward
 from leap_c.ocp.acados.utils.solve import solve_with_retry
 
-
 N_BATCH_MAX = 256
 NUM_THREADS_BATCH_SOLVER = 4
 
 
-from dataclasses import dataclass
+@dataclass
 class AcadosDiffMpcCtx:
     """Context for differentiable MPC with acados.
 
@@ -39,25 +38,25 @@ class AcadosDiffMpcCtx:
 
     iterate: AcadosOcpFlattenedBatchIterate
     status: np.ndarray
-    log: dict[str, float] | None
+    log: Optional[Dict[str, float]]
     solver_input: AcadosOcpSolverInput
 
     # backward pass
-    needs_input_grad: list[bool] | None = None
+    needs_input_grad: Optional[List[bool]] = None
 
     # sensitivity fields
-    du0_dp_global: np.ndarray | None = None
-    du0_dx0: np.ndarray | None = None
-    dvalue_du0: np.ndarray | None = None
-    dvalue_dx0: np.ndarray | None = None
-    dx_dp_global: np.ndarray | None = None
-    du_dp_global: np.ndarray | None = None
-    dvalue_dp_global: np.ndarray | None = None
+    du0_dp_global: Optional[np.ndarray] = None
+    du0_dx0: Optional[np.ndarray] = None
+    dvalue_du0: Optional[np.ndarray] = None
+    dvalue_dx0: Optional[np.ndarray] = None
+    dx_dp_global: Optional[np.ndarray] = None
+    du_dp_global: Optional[np.ndarray] = None
+    dvalue_dp_global: Optional[np.ndarray] = None
 
 
 def collate_acados_diff_mpc_ctx(
     batch: Sequence[AcadosDiffMpcCtx],
-    collate_fn_map: dict[str, Callable] | None = None,
+    collate_fn_map: Optional[Dict[str, Callable]] = None,
 ) -> AcadosDiffMpcCtx:
     """Collates a batch of AcadosDiffMpcCtx objects into a single object."""
     return AcadosDiffMpcCtx(
@@ -89,10 +88,10 @@ class AcadosDiffMpcFunction(DiffFunction):
     def __init__(
         self,
         ocp: AcadosOcp,
-        initializer: AcadosDiffMpcInitializer | None = None,
-        sensitivity_ocp: AcadosOcp | None = None,
-        discount_factor: float | None = None,
-        export_directory: Path | None = None,
+        initializer: Optional[AcadosDiffMpcInitializer] = None,
+        sensitivity_ocp: Optional[AcadosOcp] = None,
+        discount_factor: Optional[float] = None,
+        export_directory: Optional[Path] = None,
     ) -> None:
         self.ocp = ocp
         self.forward_batch_solver, self.backward_batch_solver = (
@@ -113,13 +112,13 @@ class AcadosDiffMpcFunction(DiffFunction):
 
     def forward(  # type: ignore
         self,
-        ctx: AcadosDiffMpcCtx | None,
+        ctx: Optional[AcadosDiffMpcCtx],
         x0: np.ndarray,
-        u0: np.ndarray | None = None,
-        p_global: np.ndarray | None = None,
-        p_stagewise: np.ndarray | None = None,
-        p_stagewise_sparse_idx: np.ndarray | None = None,
-    ) -> tuple[AcadosDiffMpcCtx, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        u0: Optional[np.ndarray] = None,
+        p_global: Optional[np.ndarray] = None,
+        p_stagewise: Optional[np.ndarray] = None,
+        p_stagewise_sparse_idx: Optional[np.ndarray] = None,
+    ) -> Tuple[AcadosDiffMpcCtx, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
         Perform the forward pass by solving the OCP.
 
@@ -174,10 +173,10 @@ class AcadosDiffMpcFunction(DiffFunction):
     def backward(  # type: ignore
         self,
         ctx: AcadosDiffMpcCtx,
-        u0_grad: np.ndarray | None,
-        x_grad: np.ndarray | None,
-        u_grad: np.ndarray | None,
-        value_grad: np.ndarray | None,
+        u0_grad: Optional[np.ndarray],
+        x_grad: Optional[np.ndarray],
+        u_grad: Optional[np.ndarray],
+        value_grad: Optional[np.ndarray],
     ):
         """
         Perform the backward pass via implicit differentiation.

@@ -2,7 +2,7 @@
 layer for the policy network."""
 
 from pathlib import Path
-from typing import Any, Iterator, NamedTuple, Type
+from typing import Any, Iterator, NamedTuple, Type, Optional, Union, Tuple, Dict, List
 
 import gymnasium.spaces as spaces
 import gymnasium as gym
@@ -24,8 +24,8 @@ from leap_c.utils.gym import wrap_env, seed_env
 class SacZopActorOutput(NamedTuple):
     param: torch.Tensor
     log_prob: torch.Tensor
-    stats: dict[str, float]
-    action: torch.Tensor | None = None
+    stats: Dict[str, float]
+    action: Optional[torch.Tensor] = None
     ctx: Any = None
 
 
@@ -84,11 +84,11 @@ class SacZopTrainer(Trainer[SacTrainerConfig]):
         self,
         cfg: SacTrainerConfig,
         val_env: gym.Env,
-        output_path: str | Path,
+        output_path: Union[str, Path],
         device: str,
         train_env: gym.Env,
         controller: ParameterizedController,
-        extractor_cls: Type[Extractor] | ExtractorName = "identity",
+        extractor_cls: Union[Type[Extractor], ExtractorName] = "identity",
     ):
         """Initializes the SAC ZOP trainer.
 
@@ -269,7 +269,7 @@ class SacZopTrainer(Trainer[SacTrainerConfig]):
 
     def act(
         self, obs, deterministic: bool = False, state=None
-    ) -> tuple[np.ndarray, Any, dict[str, float]]:
+    ) -> Tuple[np.ndarray, Any, Dict[str, float]]:
         obs = self.buffer.collate([obs])
 
         with torch.no_grad():
@@ -280,14 +280,14 @@ class SacZopTrainer(Trainer[SacTrainerConfig]):
         return action, pi_output.ctx, pi_output.stats
 
     @property
-    def optimizers(self) -> list[torch.optim.Optimizer]:
+    def optimizers(self) -> List[torch.optim.Optimizer]:
         if self.alpha_optim is None:
             return [self.q_optim, self.pi_optim]
 
         return [self.q_optim, self.pi_optim, self.alpha_optim]
 
-    def periodic_ckpt_modules(self) -> list[str]:
+    def periodic_ckpt_modules(self) -> List[str]:
         return ["q", "pi", "q_target", "log_alpha"]
 
-    def singleton_ckpt_modules(self) -> list[str]:
+    def singleton_ckpt_modules(self) -> List[str]:
         return ["buffer"]

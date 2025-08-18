@@ -6,6 +6,7 @@ from pathlib import Path
 import shutil
 from tempfile import mkdtemp
 
+from typing import Optional, Union
 from acados_template import (
     AcadosOcp,
     AcadosOcpBatchSolver,
@@ -19,8 +20,8 @@ from leap_c.ocp.acados.utils.delete_directory_hook import DeleteDirectoryHook
 
 def create_batch_solver(
     ocp: AcadosOcp,
-    export_directory: str | Path | None = None,
-    discount_factor: float | None = None,
+    export_directory: Optional[Union[str, Path]] = None,
+    discount_factor: Optional[float] = None,
     n_batch_max: int = 256,
     num_threads: int = 4,
 ) -> AcadosOcpBatchSolver:
@@ -96,9 +97,9 @@ def create_batch_solver(
 
 def create_forward_backward_batch_solvers(
     ocp: AcadosOcp,
-    sensitivity_ocp: AcadosOcp | None = None,  # type:ignore
-    export_directory: str | Path | None = None,
-    discount_factor: float | None = None,
+    sensitivity_ocp: Optional[AcadosOcp] = None,  # type:ignore
+    export_directory: Optional[Union[str, Path]] = None,
+    discount_factor: Optional[float] = None,
     n_batch_max: int = 256,
     num_threads: int = 4,
 ):
@@ -181,7 +182,7 @@ def _turn_on_warmstart(acados_ocp: AcadosOcp):
 
 
 def _set_discount_factor(
-    ocp_solver: AcadosOcpSolver | AcadosOcpBatchSolver, discount_factor: float
+    ocp_solver: Union[AcadosOcpSolver, AcadosOcpBatchSolver], discount_factor: float
 ):
     if isinstance(ocp_solver, AcadosOcpSolver):
         for stage in range(ocp_solver.acados_ocp.solver_options.N_horizon + 1):  # type: ignore
@@ -207,7 +208,7 @@ class AcadosFileManager:
 
     def __init__(
         self,
-        export_directory: Path | None = None,
+        export_directory: Optional[Path] = None,
     ):
         """Initialize the export directory manager.
 

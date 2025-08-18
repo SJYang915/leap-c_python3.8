@@ -1,3 +1,5 @@
+
+from typing import Any, Dict, List, Optional, Tuple, Union, Set
 from typing import NamedTuple
 
 import casadi as ca
@@ -34,8 +36,8 @@ class Parameter(NamedTuple):
 
     name: str
     value: np.ndarray
-    lower_bound: np.ndarray | None = None
-    upper_bound: np.ndarray | None = None
+    lower_bound: Optional[np.ndarray] = None
+    upper_bound: Optional[np.ndarray] = None
     fix: bool = True
     differentiable: bool = False
     stagewise: bool = False
@@ -44,15 +46,15 @@ class Parameter(NamedTuple):
 class AcadosParamManager:
     """Manager for acados parameters."""
 
-    parameters: dict[str, Parameter] = {}
-    p_global: struct_symSX | None = None
-    p_global_values: struct | None = None
-    p: struct_symSX | None = None
-    parameter_values: list[struct] | None = None
+    parameters: Dict[str, Parameter] = {}
+    p_global: Optional['struct_symSX'] = None
+    p_global_values: Optional['struct'] = None
+    p: Optional['struct_symSX'] = None
+    parameter_values: Optional[List['struct']] = None
 
     def __init__(
         self,
-        params: list[Parameter],
+        params: List[Parameter],
         N_horizon: int,
     ) -> None:
         self.parameters = {param.name: param for param in params}
@@ -186,7 +188,7 @@ class AcadosParamManager:
 
     def _get_differentiable_global_parameters(
         self,
-    ) -> dict[str, np.ndarray]:
+    ) -> Dict[str, np.ndarray]:
         """Get all differentiable global parameters."""
         return {
             key: value.value
@@ -196,7 +198,7 @@ class AcadosParamManager:
 
     def _get_differentiable_stagewise_parameters(
         self,
-    ) -> dict[str, np.ndarray]:
+    ) -> Dict[str, np.ndarray]:
         """Get all differentiable stage-wise parameters."""
         return {
             key: value.value
@@ -206,7 +208,7 @@ class AcadosParamManager:
 
     def _get_nondifferentiable_stagewise_parameters(
         self,
-    ) -> dict[str, np.ndarray]:
+    ) -> Dict[str, np.ndarray]:
         """Get all differentiable stage-wise parameters."""
         return {
             key: value.value
@@ -216,7 +218,7 @@ class AcadosParamManager:
 
     def _get_nondifferentiable_parameters(
         self,
-    ) -> dict[str, np.ndarray]:
+    ) -> Dict[str, np.ndarray]:
         """Get all nondifferentiable parameters."""
         return {
             key: value.value
@@ -226,7 +228,7 @@ class AcadosParamManager:
 
     def combine_parameter_values(
         self,
-        batch_size: int | None = None,
+        batch_size: Optional[int] = None,
         **overwrite: np.ndarray,
     ) -> np.ndarray:
         """
@@ -282,7 +284,7 @@ class AcadosParamManager:
 
         return batch_parameter_values
 
-    def get_p_global_bounds(self) -> tuple[np.ndarray, np.ndarray] | tuple[None, None]:
+    def get_p_global_bounds(self) -> Union[Tuple[np.ndarray, np.ndarray], Tuple[None, None]]:
         """Get the lower bound for p_global parameters."""
         if self.p_global is None:
             return None, None
@@ -292,8 +294,8 @@ class AcadosParamManager:
     def get(
         self,
         field: str,
-        stage: int | None = None,
-    ) -> ca.SX | ca.MX | np.ndarray:
+        stage: Optional[int] = None,
+    ) -> Union[ca.SX, ca.MX, np.ndarray]:
         """Get the variable for a given field at a specific stage."""
         if field in self.parameters and self.parameters[field].fix:
             return self.parameters[field].value

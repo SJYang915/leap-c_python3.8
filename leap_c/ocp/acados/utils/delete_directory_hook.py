@@ -1,5 +1,6 @@
 import atexit
 import shutil
+from typing import Union
 
 from pathlib import Path
 
@@ -15,7 +16,7 @@ class DeleteDirectoryHook:
     def __init__(
         self,
         obj,
-        dir: str | Path,
+        dir: Union[str, Path],
     ):
         """Initializes the DeleteDirectoryHook and registers the cleanup
         function.

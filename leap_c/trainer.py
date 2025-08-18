@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Generic, Iterator, Literal, TypeVar, List
+from typing import Any, Generic, Iterator, Literal, TypeVar, List, Optional, Tuple, Dict, Union
 
 import numpy as np
 import torch
@@ -47,7 +47,7 @@ class TrainerConfig:
     val_num_rollouts: int = 10
     val_deterministic: bool = True
     val_num_render_rollouts: int = 1
-    val_render_mode: str | None = "rgb_array"  # rgb_array or human
+    val_render_mode: Optional[str] = "rgb_array"  # rgb_array or human
     val_render_deterministic: bool = True
     val_report_score: Literal["cum", "final"] = (
         "cum"  # "cum" for cumulative score, "final" for final score
@@ -71,7 +71,7 @@ class TrainerState:
     """
 
     step: int = 0
-    scores: list[float] = field(default_factory=list)
+    scores: List[float] = field(default_factory=list)
     max_score: float = -float("inf")
 
 
@@ -94,9 +94,9 @@ class Trainer(ABC, nn.Module, Generic[TrainerConfigType]):
         self,
         cfg: TrainerConfigType,
         eval_env: gym.Env,
-        output_path: str | Path,
+        output_path: Union[str, Path],
         device: str,
-        wrappers: List[WrapperType] | None = None,
+        wrappers: Optional[List[WrapperType]] = None,
     ):
         """Initializes the trainer with a configuration, output path, and device.
 
@@ -149,7 +149,7 @@ class Trainer(ABC, nn.Module, Generic[TrainerConfigType]):
     @abstractmethod
     def act(
         self, obs, deterministic: bool = False, state=None
-    ) -> tuple[np.ndarray, Any | None, dict[str, float] | None]:
+    ) -> Tuple[np.ndarray, Optional[Any], Optional[Dict[str, float]]]:
         """Act based on the observation.
 
         This is intended for rollouts (= interaction with the environment).
@@ -167,14 +167,14 @@ class Trainer(ABC, nn.Module, Generic[TrainerConfigType]):
         ...
 
     @property
-    def optimizers(self) -> list[torch.optim.Optimizer]:
+    def optimizers(self) -> List[torch.optim.Optimizer]:
         """If provided optimizers are also checkpointed."""
         return []
 
     def report_stats(
         self,
         group: str,
-        stats: dict[str, float | np.ndarray],
+        stats: Dict[str, Union[float, np.ndarray]],
         verbose: bool = False,
         with_smoothing: bool = True,
     ):
@@ -293,7 +293,7 @@ class Trainer(ABC, nn.Module, Generic[TrainerConfigType]):
         self,
         name: str,
         suffix: str,
-        basedir: str | Path | None = None,
+        basedir: Optional[Union[str, Path]] = None,
         singleton: bool = False,
     ) -> Path:
         """Returns the path to a checkpoint file."""
@@ -314,21 +314,21 @@ class Trainer(ABC, nn.Module, Generic[TrainerConfigType]):
 
         return basedir / "ckpts" / f"{self.state.step}_{name}.{suffix}"
 
-    def periodic_ckpt_modules(self) -> list[str]:
+    def periodic_ckpt_modules(self) -> List[str]:
         """Returns the modules that should be checkpointed periodically.
 
         This is used for example for tracking policy parameters over time.
         """
         return []
 
-    def singleton_ckpt_modules(self) -> list[str]:
+    def singleton_ckpt_modules(self) -> List[str]:
         """Returns the modules that should be checkpointed only once.
 
         Replay Buffers often should not be stored multiple times as there is overlap.
         """
         return []
 
-    def save(self, path: str | Path | None = None) -> None:
+    def save(self, path: Optional[Union[str, Path]] = None) -> None:
         """Save the trainer state in a checkpoint folder.
 
         If the path is None, the checkpoint is saved in the output path of the trainer.
@@ -364,7 +364,7 @@ class Trainer(ABC, nn.Module, Generic[TrainerConfigType]):
             }
             torch.save(state_dict, self._ckpt_path("optimizers", "ckpt", path))
 
-    def load(self, path: str | Path) -> None:
+    def load(self, path: Union[str, Path]) -> None:
         """Loads the state of a trainer from the output_path.
 
         Args:

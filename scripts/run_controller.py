@@ -39,7 +39,7 @@ class ControllerTrainer(Trainer[ControllerTrainerConfig]):
         self,
         cfg: ControllerTrainerConfig,
         val_env: gym.Env,
-    output_path: Union[str, Path],
+        output_path: Union[str, Path],
         device: str,
         controller: ParameterizedController,
     ):

@@ -1,11 +1,12 @@
 """This module creates PyTorch autograd functions"""
 
 import torch
+from typing import Type
 
 from leap_c.autograd.function import DiffFunction
 
 
-def create_autograd_function(fun: DiffFunction) -> type[torch.autograd.Function]:
+def create_autograd_function(fun: DiffFunction) -> Type[torch.autograd.Function]:
     """Creates a PyTorch autograd function from an object implementing
     NumPy-based forward and backward methods.
 

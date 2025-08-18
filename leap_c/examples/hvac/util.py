@@ -2,7 +2,6 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path
-from typing import Any
 
 import casadi as ca
 import matplotlib.pyplot as plt
@@ -672,11 +671,11 @@ def plot_comfort_violations(
 
 
 def transcribe_continuous_state_space(
-    Ac: Union['ca.SX', 'np.ndarray'],
-    Bc: Union['ca.SX', 'np.ndarray'],
-    Ec: Union['ca.SX', 'np.ndarray'],
+    Ac: Union[ca.SX, np.ndarray],
+    Bc: Union[ca.SX, np.ndarray],
+    Ec: Union[ca.SX, np.ndarray],
     params: Dict[str, float],
-) -> Tuple['ca.SX', 'ca.SX', 'ca.SX']:
+) -> Tuple[ca.SX, ca.SX, ca.SX]:
     """
     Create continuous-time state-space matrices Ac, Bc, Ec as per equation (6).
 
@@ -734,12 +733,12 @@ def transcribe_continuous_state_space(
 
 
 def transcribe_discrete_state_space(
-    Ad: Union['ca.SX', 'np.ndarray'],
-    Bd: Union['ca.SX', 'np.ndarray'],
-    Ed: Union['ca.SX', 'np.ndarray'],
+    Ad: Union[ca.SX, np.ndarray],
+    Bd: Union[ca.SX, np.ndarray],
+    Ed: Union[ca.SX, np.ndarray],
     dt: float,
     params: Dict[str, float],
-) -> Tuple['ca.SX', 'ca.SX', 'ca.SX']:
+) -> Tuple[ca.SX, ca.SX, ca.SX]:
     """
     Create discrete-time state-space matrices Ad, Bd, Ed as per equation (7).
 
@@ -914,7 +913,7 @@ def set_temperature_limits(
     lb_day: float = convert_temperature(19.0, "celsius", "kelvin"),
     ub_night: float = convert_temperature(25.0, "celsius", "kelvin"),
     ub_day: float = convert_temperature(22.0, "celsius", "kelvin"),
-) -> Tuple['np.ndarray', 'np.ndarray']:
+) -> Tuple[np.ndarray, np.ndarray]:
     """Set temperature limits based on the time of day."""
     hours = np.floor(quarter_hours / 4)
 

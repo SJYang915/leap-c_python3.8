@@ -3,7 +3,7 @@ import numpy as np
 from gymnasium import spaces
 
 from gymnasium.envs.classic_control import utils as gym_utils
-from typing import Optional
+from typing import Optional, Tuple
 
 
 class CartPoleEnv(gym.Env):
@@ -54,7 +54,7 @@ class CartPoleEnv(gym.Env):
 
     def __init__(
         self,
-        render_mode: str | None = None,
+        render_mode: Optional[str] = None,
     ):
         self.gravity = 9.81
         self.masscart = 1.0
@@ -137,7 +137,7 @@ class CartPoleEnv(gym.Env):
         self.window = None
         self.clock = None
 
-    def step(self, action: np.ndarray) -> tuple[np.ndarray, float, bool, bool, dict]:
+    def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, bool, dict]:
         """Execute the dynamics of the pendulum on cart."""
         if self.reset_needed:
             raise Exception("Call reset before using the step method.")
@@ -175,8 +175,8 @@ class CartPoleEnv(gym.Env):
         return self.x, r, term, trunc, info
 
     def reset(
-        self, *, seed: int | None = None, options: dict | None = None
-    ) -> tuple[np.ndarray, dict]:  # type: ignore
+        self, *, seed: Optional[int] = None, options: Optional[dict] = None
+    ) -> Tuple[np.ndarray, dict]:  # type: ignore
         if seed is not None:
             super().reset(seed=seed)
             self.observation_space.seed(seed)
@@ -213,7 +213,7 @@ class CartPoleEnv(gym.Env):
 
     def calc_pole_end(
         self, x_coord: float, theta: float, length: float
-    ) -> tuple[float, float]:
+    ) -> Tuple[float, float]:
         # NOTE: The minus is necessary because theta is seen as counterclockwise
         pole_x = x_coord - length * np.sin(theta)
         pole_y = length * np.cos(theta)

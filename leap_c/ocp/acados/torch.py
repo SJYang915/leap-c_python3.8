@@ -1,5 +1,7 @@
 """Central interface to use acados in PyTorch."""
 
+
+from typing import Optional
 from pathlib import Path
 
 from acados_template import AcadosOcp
@@ -33,10 +35,10 @@ class AcadosDiffMpc(nn.Module):
     def __init__(
         self,
         ocp: AcadosOcp,
-        initializer: AcadosDiffMpcInitializer | None = None,
-        sensitivity_ocp: AcadosOcp | None = None,
-        discount_factor: float | None = None,
-        export_directory: Path | None = None,
+        initializer: Optional[AcadosDiffMpcInitializer] = None,
+        sensitivity_ocp: Optional[AcadosOcp] = None,
+        discount_factor: Optional[float] = None,
+        export_directory: Optional[Path] = None,
     ):
         """
         Initializes the AcadosDiffMpc module.
@@ -69,11 +71,11 @@ class AcadosDiffMpc(nn.Module):
     def forward(
         self,
         x0: torch.Tensor,
-        u0: torch.Tensor | None = None,
-        p_global: torch.Tensor | None = None,
-        p_stagewise: torch.Tensor | None = None,
-        p_stagewise_sparse_idx: torch.Tensor | None = None,
-        ctx: AcadosDiffMpcCtx | None = None,
+        u0: Optional[torch.Tensor] = None,
+        p_global: Optional[torch.Tensor] = None,
+        p_stagewise: Optional[torch.Tensor] = None,
+        p_stagewise_sparse_idx: Optional[torch.Tensor] = None,
+        ctx: Optional[AcadosDiffMpcCtx] = None,
     ):
         """
         Performs the forward pass.

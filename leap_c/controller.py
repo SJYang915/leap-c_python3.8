@@ -1,9 +1,8 @@
-from typing import Any, Callable, Dict, Optional, Tuple, Type, Union
 """Module defining the abstract interface for differentiable, parameterized
 controllers in PyTorch."""
 
 from abc import abstractmethod
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, Dict, Optional, Tuple, Type, Union
 
 import gymnasium as gym
 import numpy as np

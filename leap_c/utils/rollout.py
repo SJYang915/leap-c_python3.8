@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 from pathlib import Path
-from typing import Callable, Optional, Any, Generator
+from typing import Callable, Optional, Any, Generator, Union, Tuple, Dict, DefaultDict, List
 
 import torch
 from gymnasium import Env
@@ -16,9 +16,9 @@ def episode_rollout(
     episodes: int = 1,
     render_episodes: int = 0,
     render_human: bool = False,
-    video_folder: Optional[str | Path] = None,
+    video_folder: Optional[Union[str, Path]] = None,
     name_prefix: Optional[str] = None,
-) -> Generator[tuple[dict[str, bool | Any], defaultdict[Any, list]], Any, None]:
+) -> Generator[Tuple[Dict[str, Union[bool, Any]], DefaultDict[Any, List[Any]]], Any, None]:
     """Rollout an episode and returns the cumulative reward.
 
     Args:

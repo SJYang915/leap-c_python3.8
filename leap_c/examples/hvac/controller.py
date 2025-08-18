@@ -1,12 +1,14 @@
-from typing import Any, Dict, Optional, Tuple, Union
+from __future__ import annotations
+
+from typing import Any, Dict, Optional, Tuple, NamedTuple, Union
 from pathlib import Path
-from typing import Any, NamedTuple
 
 import pandas as pd
 import casadi as ca
 import gymnasium as gym
 import matplotlib.pyplot as plt
 import numpy as np
+from numpy.typing import NDArray
 import torch
 from acados_template import ACADOS_INFTY
 from acados_template import AcadosOcp
@@ -46,11 +48,11 @@ class HvacController(ParameterizedController):
 
     def __init__(
         self,
-    params: Optional[Tuple['Parameter', ...]] = None,
+        params: Optional[Tuple['Parameter', ...]] = None,
         stagewise: bool = False,
         N_horizon: int = 96,  # 24 hours in 15 minutes time steps
-    diff_mpc_kwargs: Optional[Dict[str, Any]] = None,
-    export_directory: Optional['Path'] = None,
+        diff_mpc_kwargs: Optional[Dict[str, Any]] = None,
+        export_directory: Optional[Path] = None,
     ) -> None:
         super().__init__()
 
@@ -445,7 +447,7 @@ def _add_summary_stats(
 
 
 def plot_ocp_results(
-    time: np.ndarray[np.datetime64],
+    time: NDArray[np.datetime64],
     obs: np.ndarray,
     ctx: Any,
     figsize: Tuple[float, float] = (12, 10),

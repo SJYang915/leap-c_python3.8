@@ -1,3 +1,4 @@
+from typing import Optional, Union
 """Main script to run experiments."""
 
 from argparse import ArgumentParser
@@ -80,9 +81,9 @@ def create_cfg() -> RunSacFopConfig:
 
 def run_sac_fop(
     cfg: RunSacFopConfig,
-    output_path: str | Path,
+    output_path: Union[str, 'Path'],
     device: str = "cuda",
-    reuse_code_dir: Path | None = None,
+    reuse_code_dir: Optional['Path'] = None,
 ) -> float:
     trainer = SacFopTrainer(
         val_env=create_env(cfg.env, render_mode="rgb_array"),

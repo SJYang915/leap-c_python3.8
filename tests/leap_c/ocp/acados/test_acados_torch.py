@@ -1,9 +1,9 @@
 import copy
 import platform
-from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
+from typing import Tuple, Dict, Callable
 import numpy as np
 import torch
 from acados_template import AcadosOcp
@@ -388,7 +388,7 @@ def test_forward(
 
     def _run_single_forward_test(
         diff_mpc: AcadosDiffMpc,
-        forward_kwargs: dict[str, torch.Tensor],
+        forward_kwargs: Dict[str, torch.Tensor],
         expected_output_type: str,
         n_batch: int,
         acados_ocp: AcadosOcp,
@@ -591,7 +591,7 @@ def test_backward(
     ) -> Callable:
         """Create a test function that returns (output, status) tuple."""
 
-        def test_func(*args, **kwargs) -> tuple[torch.Tensor, torch.Tensor]:
+        def test_func(*args, **kwargs) -> Tuple[torch.Tensor, torch.Tensor]:
             result = forward_func(*args, **kwargs)
             ctx = result[0]
 

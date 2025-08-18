@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterator, Type
+from typing import Iterator, Optional, Type, Union, Tuple, Dict, List
 
 import gymnasium as gym
 import gymnasium.spaces as spaces
@@ -51,9 +51,9 @@ class SacTrainerConfig(TrainerConfig):
     soft_update_freq: int = 1
     lr_q: float = 1e-4
     lr_pi: float = 1e-4
-    lr_alpha: float | None = 1e-3
+    lr_alpha: Optional[float] = 1e-3
     init_alpha: float = 0.01
-    target_entropy: float | None = None
+    target_entropy: Optional[float] = None
     entropy_reward_bonus: bool = True
     num_critics: int = 2
     report_loss_freq: int = 100
@@ -127,10 +127,10 @@ class SacTrainer(Trainer[SacTrainerConfig]):
         self,
         cfg: SacTrainerConfig,
         val_env: gym.Env,
-        output_path: str | Path,
+        output_path: Union[str, Path],
         device: str,
         train_env: gym.Env,
-        extractor_cls: Type[Extractor] | ExtractorName = "identity",
+        extractor_cls: Union[Type[Extractor], ExtractorName] = "identity",
     ):
         """Initializes the trainer with a configuration, output path, and device.
 
@@ -281,21 +281,21 @@ class SacTrainer(Trainer[SacTrainerConfig]):
 
     def act(
         self, obs, deterministic: bool = False, state=None
-    ) -> tuple[np.ndarray, None, dict[str, float]]:
+    ) -> Tuple[np.ndarray, None, Dict[str, float]]:
         obs = self.buffer.collate([obs])
         with torch.no_grad():
             action, _, stats = self.pi(obs, deterministic=deterministic)
         return action.cpu().numpy()[0], None, stats
 
     @property
-    def optimizers(self) -> list[torch.optim.Optimizer]:
+    def optimizers(self) -> List[torch.optim.Optimizer]:
         if self.alpha_optim is None:
             return [self.q_optim, self.pi_optim]
 
         return [self.q_optim, self.pi_optim, self.alpha_optim]
 
-    def periodic_ckpt_modules(self) -> list[str]:
+    def periodic_ckpt_modules(self) -> List[str]:
         return ["q", "pi", "q_target", "log_alpha"]
 
-    def singleton_ckpt_modules(self) -> list[str]:
+    def singleton_ckpt_modules(self) -> List[str]:
         return ["buffer"]

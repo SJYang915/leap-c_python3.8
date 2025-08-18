@@ -1,3 +1,4 @@
+from typing import Tuple
 import numpy as np
 import torch
 from acados_template import AcadosOcp, AcadosOcpSolver
@@ -8,7 +9,7 @@ from leap_c.ocp.acados.torch import AcadosDiffMpc
 
 def test_param_manager_combine_parameter_values(
     acados_test_ocp_with_stagewise_varying_params: AcadosOcp,
-    nominal_stagewise_params: tuple[Parameter, ...],
+    nominal_stagewise_params: Tuple[Parameter, ...],
     rng: np.random.Generator,
 ) -> None:
     """
@@ -65,7 +66,7 @@ def test_param_manager_combine_parameter_values(
 def test_diff_mpc_with_stagewise_params_equivalent_to_diff_mpc(
     diff_mpc: AcadosDiffMpc,
     diff_mpc_with_stagewise_varying_params: AcadosDiffMpc,
-    nominal_stagewise_params: tuple[Parameter, ...],
+    nominal_stagewise_params: Tuple[Parameter, ...],
 ) -> None:
     """
     Test that the diff_mpc with stagewise varying parameters is equivalent to the
@@ -115,7 +116,7 @@ def test_diff_mpc_with_stagewise_params_equivalent_to_diff_mpc(
 
 
 def test_stagewise_solution_matches_global_solver_for_initial_reference_change(
-    nominal_stagewise_params: tuple[Parameter, ...],
+    nominal_stagewise_params: Tuple[Parameter, ...],
     acados_test_ocp_no_p_global: AcadosOcp,
     diff_mpc_with_stagewise_varying_params: AcadosDiffMpc,
     diff_mpc: AcadosDiffMpc,

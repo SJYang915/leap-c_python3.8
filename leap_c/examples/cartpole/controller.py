@@ -1,7 +1,6 @@
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Optional, Tuple, Union, Literal
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any, Literal
 
 import casadi as ca
 import gymnasium as gym
@@ -21,7 +20,7 @@ class CartPoleController(ParameterizedController):
 
     def __init__(
         self,
-    params: Optional['CartPoleParams'] = None,
+        params: Optional['CartPoleParams'] = None,
         N_horizon: int = 5,
         T_horizon: float = 0.25,
         Fmax: float = 80.0,
@@ -29,7 +28,7 @@ class CartPoleController(ParameterizedController):
         exact_hess_dyn: bool = True,
         cost_type: Literal["EXTERNAL", "NONLINEAR_LS"] = "NONLINEAR_LS",
         stagewise: bool = False,
-    export_directory: Optional['Path'] = None,
+        export_directory: Optional['Path'] = None,
     ):
         """
         Args:

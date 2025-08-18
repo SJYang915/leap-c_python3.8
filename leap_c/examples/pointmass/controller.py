@@ -1,7 +1,6 @@
 from typing import Any, Optional, Tuple, Union
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any
 
 from acados_template import AcadosOcp
 import casadi as ca
@@ -27,11 +26,11 @@ class PointMassController(ParameterizedController):
 
     def __init__(
         self,
-    params: Optional['PointMassParams'] = None,
+        params: Optional['PointMassParams'] = None,
         N_horizon: int = 20,
         T_horizon: float = 2.0,
         stagewise: bool = False,
-    export_directory: Optional['Path'] = None,
+        export_directory: Optional['Path'] = None,
     ):
         super().__init__()
         self.params = (

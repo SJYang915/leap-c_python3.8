@@ -1,5 +1,7 @@
 import time
 
+
+from typing import Optional, Tuple, Dict
 from acados_template.acados_ocp_batch_solver import AcadosOcpBatchSolver
 from acados_template.acados_ocp_iterate import AcadosOcpFlattenedBatchIterate
 import numpy as np
@@ -12,9 +14,9 @@ from leap_c.ocp.acados.data import AcadosOcpSolverInput
 def solve_with_retry(
     batch_solver: AcadosOcpBatchSolver,
     initializer: AcadosDiffMpcInitializer,
-    ocp_iterate: AcadosOcpFlattenedBatchIterate | None,
+    ocp_iterate: Optional[AcadosOcpFlattenedBatchIterate],
     solver_input: AcadosOcpSolverInput,
-) -> tuple[np.ndarray, dict[str, float]]:
+) -> Tuple[np.ndarray, Dict[str, float]]:
     """Solve a batch of ocps, and retries in case of divergence.
 
     This function prepares the batch solver by loading the iterate, setting

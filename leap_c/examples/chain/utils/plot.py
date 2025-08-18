@@ -1,4 +1,6 @@
 import numpy as np
+
+from typing import Tuple, Optional
 from matplotlib import pyplot as plt, animation
 
 
@@ -80,7 +82,7 @@ def plot_timings(results_list, labels, figure_filename=None, t_max=None):
 
 def plot_steady_state(
     x_ss: np.ndarray, u_ss: np.ndarray, n_mass: int, pos_first_mass: np.ndarray
-) -> tuple[plt.Figure, plt.Figure]:
+) -> Tuple[plt.Figure, plt.Figure]:
     pos_ss = x_ss[: 3 * (n_mass - 1)]
 
     # Concatenate xPosFirstMass and pos_ss
@@ -276,10 +278,10 @@ def get_plot_lims(a):
 
 def animate_chain_position(
     simX: np.ndarray,
-    xPosFirstMass: np.ndarray | None,
-    refX: np.ndarray | None = None,
+    xPosFirstMass: Optional[np.ndarray],
+    refX: Optional[np.ndarray] = None,
     Ts: float = 0.1,
-    yPosWall: np.ndarray | None = None,
+    yPosWall: Optional[np.ndarray] = None,
 ):
     """Creates animation of the chain, where simX contains the state trajectory.
     dt defines the time gap (in seconds) between two succesive entries.

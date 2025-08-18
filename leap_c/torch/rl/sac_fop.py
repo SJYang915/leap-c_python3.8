@@ -3,7 +3,7 @@ layer for the policy network."""
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterator, NamedTuple, Literal, Type
+from typing import Any, Iterator, NamedTuple, Literal, Type, Optional, Union, Tuple, Dict, List
 
 import gymnasium as gym
 import gymnasium.spaces as spaces
@@ -33,10 +33,10 @@ class SacFopTrainerConfig(SacTrainerConfig):
 class SacFopActorOutput(NamedTuple):
     param: torch.Tensor
     log_prob: torch.Tensor
-    stats: dict[str, float]
+    stats: Dict[str, float]
     action: torch.Tensor
     status: torch.Tensor
-    ctx: Any | None
+    ctx: Optional[Any]
 
     def select(self, mask: torch.Tensor) -> "SacFopActorOutput":
         return SacFopActorOutput(
@@ -150,11 +150,11 @@ class SacFopTrainer(Trainer[SacFopTrainerConfig]):
         self,
         cfg: SacFopTrainerConfig,
         val_env: gym.Env,
-        output_path: str | Path,
+        output_path: Union[str, Path],
         device: str,
         train_env: gym.Env,
         controller: ParameterizedController,
-        extractor_cls: Type[Extractor] | ExtractorName = "identity",
+        extractor_cls: Union[Type[Extractor], ExtractorName] = "identity",
     ):
         """Initializes the SAC FOP trainer.
 
@@ -369,7 +369,7 @@ class SacFopTrainer(Trainer[SacFopTrainerConfig]):
 
     def act(
         self, obs, deterministic: bool = False, state=None
-    ) -> tuple[np.ndarray, Any, dict[str, float]]:
+    ) -> Tuple[np.ndarray, Any, Dict[str, float]]:
         obs = self.buffer.collate([obs])
 
         with torch.no_grad():
@@ -380,14 +380,14 @@ class SacFopTrainer(Trainer[SacFopTrainerConfig]):
         return action, pi_output.ctx, pi_output.stats
 
     @property
-    def optimizers(self) -> list[torch.optim.Optimizer]:
+    def optimizers(self) -> List[torch.optim.Optimizer]:
         if self.alpha_optim is None:
             return [self.q_optim, self.pi_optim]
 
         return [self.q_optim, self.pi_optim, self.alpha_optim]
 
-    def periodic_ckpt_modules(self) -> list[str]:
+    def periodic_ckpt_modules(self) -> List[str]:
         return ["q", "pi", "q_target", "log_alpha"]
 
-    def singleton_ckpt_modules(self) -> list[str]:
+    def singleton_ckpt_modules(self) -> List[str]:
         return ["buffer"]

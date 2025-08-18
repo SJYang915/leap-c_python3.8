@@ -3,6 +3,9 @@ from abc import ABC, abstractmethod
 import numpy as np
 
 
+from typing import Optional, Union
+
+
 class DiffFunction(ABC):
     """Abstract base class for differentiable functions.
 
@@ -47,7 +50,7 @@ class DiffFunction(ABC):
     """
 
     @abstractmethod
-    def forward(self, ctx=None, *inputs: np.ndarray | None):
+    def forward(self, ctx=None, *inputs: Union[np.ndarray, None]):
         """Computes the output of the function given inputs.
 
         Args:
@@ -62,7 +65,7 @@ class DiffFunction(ABC):
         ...
 
     @abstractmethod
-    def backward(self, ctx, *output_grads: np.ndarray | None):
+    def backward(self, ctx, *output_grads: Union[np.ndarray, None]):
         """Computes the gradient of the function with respect to its inputs.
 
         Args:

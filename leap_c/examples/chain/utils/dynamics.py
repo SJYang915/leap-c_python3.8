@@ -1,6 +1,6 @@
 """Chain dynamics functions."""
 
-from typing import Callable
+from typing import Callable, Dict, Union, Optional
 
 import casadi as ca
 from casadi import SX, norm_2, vertcat
@@ -11,7 +11,7 @@ import numpy as np
 def get_f_expl_expr(
     x: ssymStruct,
     u: ca.SX,
-    p: dict[str, np.ndarray | ca.SX],
+    p: Dict[str, Union[np.ndarray, ca.SX]],
     x0: ca.SX = ca.SX.zeros(3),
 ) -> ca.SX:
     """CasADi symbolic chain dynamics.
@@ -170,8 +170,8 @@ def create_discrete_numpy_dynamics(n_mass: int, dt: float) -> Callable:
     def discrete_dynamics(
         x: np.ndarray,
         u: np.ndarray,
-        p: dict[str, np.ndarray],
-        fix_point: np.ndarray | None = None,
+        p: Dict[str, np.ndarray],
+        fix_point: Optional[np.ndarray] = None,
     ) -> np.ndarray:
         """Discrete-time NumPy dynamics using CasADi's RK4 integrator.
 

@@ -1,5 +1,4 @@
 from typing import Any, Dict, Optional, Tuple, Union
-from __future__ import annotations
 
 from pathlib import Path
 
@@ -43,15 +42,15 @@ class StochasticThreeStateRcEnv(gym.Env):
 
     def __init__(
         self,
-    params: Optional['BestestParameters'] = None,
+        params: Optional['BestestParameters'] = None,
         step_size: float = 900.0,  # Default 15 minutes
-    start_time: Optional['pd.Timestamp'] = None,
+        start_time: Optional['pd.Timestamp'] = None,
         horizon_hours: int = 36,
         max_hours: int = 3 * 24,  # 3 days
-    render_mode: Optional[str] = None,
+        render_mode: Optional[str] = None,
         price_zone: str = "NO_1",
-    price_data_path: Optional['Path'] = None,
-    weather_data_path: Optional['Path'] = None,
+        price_data_path: Optional['Path'] = None,
+        weather_data_path: Optional['Path'] = None,
         enable_noise: bool = True,
     ) -> None:
         """
@@ -543,7 +542,7 @@ class StochasticThreeStateRcEnv(gym.Env):
         return obs, reward, terminated, truncated, info
 
     def reset(
-    self, state_0: Optional['np.ndarray'] = None, seed=None, options=None
+        self, state_0: Optional['np.ndarray'] = None, seed=None, options=None
     ) -> Tuple['np.ndarray', dict]:
         """Reset the model state to initial values."""
         super().reset(seed=seed)

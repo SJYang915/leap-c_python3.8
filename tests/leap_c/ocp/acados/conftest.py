@@ -1,3 +1,5 @@
+
+from typing import Tuple, Union
 from itertools import chain
 
 import casadi as ca
@@ -13,7 +15,7 @@ from leap_c.ocp.acados.torch import AcadosDiffMpc
 
 
 @pytest.fixture(scope="session")
-def nominal_params() -> tuple[Parameter, ...]:
+def nominal_params() -> Tuple[Parameter, ...]:
     return (
         Parameter(
             name="m",
@@ -101,8 +103,8 @@ def nominal_params() -> tuple[Parameter, ...]:
 
 @pytest.fixture(scope="session")
 def nominal_stagewise_params(
-    nominal_params: tuple[Parameter, ...],
-) -> tuple[Parameter, ...]:
+    nominal_params: Tuple[Parameter, ...],
+) -> Tuple[Parameter, ...]:
     """Copy nominal_params and modify specific parameters to be stagewise."""
     # Override specific fields for stage-wise parameters
     stagewise_overrides = {
@@ -125,11 +127,11 @@ def nominal_stagewise_params(
 
 
 def get_A_disc(
-    m: float | ca.SX,
-    cx: float | ca.SX,
-    cy: float | ca.SX,
-    dt: float | ca.SX,
-) -> np.ndarray | ca.SX:
+    m: Union[float, ca.SX],
+    cx: Union[float, ca.SX],
+    cy: Union[float, ca.SX],
+    dt: Union[float, ca.SX],
+) -> Union[np.ndarray, ca.SX]:
     if any(isinstance(i, ca.SX) for i in [m, cx, cy, dt]):
         return ca.vertcat(
             ca.horzcat(1, 0, dt, 0),
@@ -149,11 +151,11 @@ def get_A_disc(
 
 
 def get_B_disc(
-    m: float | ca.SX,
-    cx: float | ca.SX,
-    cy: float | ca.SX,
-    dt: float | ca.SX,
-) -> np.ndarray | ca.SX:
+    m: Union[float, ca.SX],
+    cx: Union[float, ca.SX],
+    cy: Union[float, ca.SX],
+    dt: Union[float, ca.SX],
+) -> Union[np.ndarray, ca.SX]:
     if any(isinstance(i, ca.SX) for i in [m, cx, cy, dt]):
         return ca.vertcat(
             ca.horzcat(0, 0),
@@ -194,7 +196,7 @@ def ocp_options(request: pytest.FixtureRequest) -> AcadosOcpOptions:
 @pytest.fixture(scope="session")
 def acados_test_ocp_no_p_global(
     ocp_options: AcadosOcpOptions,
-    nominal_params: tuple[Parameter, ...],
+    nominal_params: Tuple[Parameter, ...],
 ) -> AcadosOcp:
     """Define a simple AcadosOcp for testing purposes."""
     name = "test_ocp"
@@ -400,7 +402,7 @@ def define_constraints(ocp: AcadosOcp, param_manager: AcadosParamManager) -> Non
 @pytest.fixture(scope="session", params=["external", "nonlinear_ls"])
 def acados_test_ocp(
     ocp_options: AcadosOcpOptions,
-    nominal_params: tuple[Parameter, ...],
+    nominal_params: Tuple[Parameter, ...],
     request: pytest.FixtureRequest,
 ) -> AcadosOcp:
     """Define a simple AcadosOcp for testing purposes."""
@@ -478,7 +480,7 @@ def acados_test_ocp(
 @pytest.fixture(scope="session")
 def acados_test_ocp_with_stagewise_varying_params(
     ocp_options: AcadosOcpOptions,
-    nominal_stagewise_params: tuple[Parameter, ...],
+    nominal_stagewise_params: Tuple[Parameter, ...],
 ) -> AcadosOcp:
     """Define a simple AcadosOcp for testing purposes."""
     name = "test_ocp_with_stagewise_varying_params"
@@ -517,7 +519,7 @@ def diff_mpc(acados_test_ocp: AcadosOcp) -> AcadosDiffMpc:
 @pytest.fixture(scope="session")
 def diff_mpc_with_stagewise_varying_params(
     acados_test_ocp_with_stagewise_varying_params: AcadosOcp,
-    nominal_stagewise_params: tuple[Parameter, ...],
+    nominal_stagewise_params: Tuple[Parameter, ...],
     print_level: int = 0,
 ) -> AcadosDiffMpc:
     diff_mpc = AcadosDiffMpc(

@@ -1,8 +1,7 @@
-from typing import Any, Optional, Tuple
+from typing import Any, Optional, OrderedDict, Tuple
 from copy import deepcopy
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any, OrderedDict
 
 from acados_template import (
     AcadosOcp,
@@ -33,14 +32,14 @@ class ChainController(ParameterizedController):
 
     def __init__(
         self,
-    params: Optional['ChainParams'] = None,
+        params: Optional['ChainParams'] = None,
         N_horizon: int = 20,
         T_horizon: float = 1.0,
         discount_factor: float = 1.0,
         n_mass: int = 5,
-    pos_last_mass_ref: Optional['np.ndarray'] = None,
+        pos_last_mass_ref: Optional['np.ndarray'] = None,
         stagewise: bool = False,
-    export_directory: Optional['Path'] = None,
+        export_directory: Optional['Path'] = None,
     ):
         super().__init__()
         params = (
