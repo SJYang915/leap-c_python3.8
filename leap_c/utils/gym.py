@@ -17,7 +17,7 @@ def wrap_env(env: gym.Env, wrappers: Optional[List[WrapperType]] = None) -> gym.
     Returns:
         gym.Env: The wrapped environment.
     """
-    env = RecordEpisodeStatistics(env, buffer_length=1)
+    env = RecordEpisodeStatistics(env, deque_size=1)
     env = OrderEnforcing(env)
 
     if wrappers is None:
